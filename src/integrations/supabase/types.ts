@@ -14,16 +14,229 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      appareils: {
+        Row: {
+          created_at: string
+          date_allocation_tac: string | null
+          id: string
+          imei: string
+          marque: string
+          modele: string
+          score_anomalie: number
+          statut: Database["public"]["Enums"]["statut_appareil"]
+          tac: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          date_allocation_tac?: string | null
+          id?: string
+          imei: string
+          marque?: string
+          modele?: string
+          score_anomalie?: number
+          statut?: Database["public"]["Enums"]["statut_appareil"]
+          tac?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          date_allocation_tac?: string | null
+          id?: string
+          imei?: string
+          marque?: string
+          modele?: string
+          score_anomalie?: number
+          statut?: Database["public"]["Enums"]["statut_appareil"]
+          tac?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      enregistrements_imei: {
+        Row: {
+          created_at: string
+          date_verification: string
+          features: Json
+          id: string
+          imei: string
+          resultat: Database["public"]["Enums"]["statut_appareil"]
+          score_anomalie: number
+          utilisateur_id: string
+        }
+        Insert: {
+          created_at?: string
+          date_verification?: string
+          features?: Json
+          id?: string
+          imei: string
+          resultat: Database["public"]["Enums"]["statut_appareil"]
+          score_anomalie?: number
+          utilisateur_id: string
+        }
+        Update: {
+          created_at?: string
+          date_verification?: string
+          features?: Json
+          id?: string
+          imei?: string
+          resultat?: Database["public"]["Enums"]["statut_appareil"]
+          score_anomalie?: number
+          utilisateur_id?: string
+        }
+        Relationships: []
+      }
+      historique_reparations: {
+        Row: {
+          created_at: string
+          date_reparation: string
+          id: string
+          imei: string
+          notes: string | null
+          technicien_id: string
+          type_reparation: string
+        }
+        Insert: {
+          created_at?: string
+          date_reparation?: string
+          id?: string
+          imei: string
+          notes?: string | null
+          technicien_id: string
+          type_reparation?: string
+        }
+        Update: {
+          created_at?: string
+          date_reparation?: string
+          id?: string
+          imei?: string
+          notes?: string | null
+          technicien_id?: string
+          type_reparation?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          marche: Database["public"]["Enums"]["marche_type"]
+          nom: string
+          type_activite: Database["public"]["Enums"]["activite_type"]
+          updated_at: string
+          user_id: string
+          verifications_count: number
+        }
+        Insert: {
+          created_at?: string
+          email?: string
+          id?: string
+          marche?: Database["public"]["Enums"]["marche_type"]
+          nom?: string
+          type_activite?: Database["public"]["Enums"]["activite_type"]
+          updated_at?: string
+          user_id: string
+          verifications_count?: number
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          marche?: Database["public"]["Enums"]["marche_type"]
+          nom?: string
+          type_activite?: Database["public"]["Enums"]["activite_type"]
+          updated_at?: string
+          user_id?: string
+          verifications_count?: number
+        }
+        Relationships: []
+      }
+      signalements_vol: {
+        Row: {
+          created_at: string
+          date_vol: string
+          description: string | null
+          id: string
+          imei: string
+          marque: string
+          modele: string
+          photo_url: string | null
+          quartier: string
+          reference: string
+          signale_par: string
+          statut: Database["public"]["Enums"]["statut_signalement"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          date_vol: string
+          description?: string | null
+          id?: string
+          imei: string
+          marque?: string
+          modele?: string
+          photo_url?: string | null
+          quartier?: string
+          reference: string
+          signale_par: string
+          statut?: Database["public"]["Enums"]["statut_signalement"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          date_vol?: string
+          description?: string | null
+          id?: string
+          imei?: string
+          marque?: string
+          modele?: string
+          photo_url?: string | null
+          quartier?: string
+          reference?: string
+          signale_par?: string
+          statut?: Database["public"]["Enums"]["statut_signalement"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      activite_type: "revente" | "reparation" | "les_deux"
+      app_role: "dealer" | "technicien" | "enqueteur" | "admin"
+      marche_type: "Missebo" | "Dantokpa" | "Cadjehoun" | "Autre"
+      statut_appareil: "legitime" | "suspect" | "vole"
+      statut_signalement: "ouvert" | "en_cours" | "resolu"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +363,12 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      activite_type: ["revente", "reparation", "les_deux"],
+      app_role: ["dealer", "technicien", "enqueteur", "admin"],
+      marche_type: ["Missebo", "Dantokpa", "Cadjehoun", "Autre"],
+      statut_appareil: ["legitime", "suspect", "vole"],
+      statut_signalement: ["ouvert", "en_cours", "resolu"],
+    },
   },
 } as const
