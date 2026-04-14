@@ -6,6 +6,7 @@ import { Shield, Smartphone, Search, Cpu, Users, BarChart3, MapPin, Wrench, Chev
 export default function Index() {
   return (
     <div className="min-h-screen bg-background">
+      <div className="benin-stripe" />
       {/* Navbar */}
       <nav className="sticky top-0 z-50 bg-card/90 backdrop-blur-md border-b border-border">
         <div className="container mx-auto flex items-center justify-between h-16 px-4">
@@ -145,10 +146,10 @@ export default function Index() {
             </div>
             <div className="space-y-2 text-sm opacity-80">
               <p className="font-semibold opacity-100">Liens</p>
-              <p>Mentions légales</p>
-              <p>Politique RGPD</p>
-              <p>Contact</p>
-              <p>Documentation API</p>
+              <Link to="/mentions-legales" className="block hover:opacity-100">Mentions légales</Link>
+              <Link to="/politique-rgpd" className="block hover:opacity-100">Politique RGPD</Link>
+              <Link to="/contact" className="block hover:opacity-100">Contact</Link>
+              <Link to="/api-doc" className="block hover:opacity-100">Documentation API</Link>
             </div>
             <div className="space-y-2 text-sm opacity-80">
               <p className="font-semibold opacity-100">Conformité</p>
