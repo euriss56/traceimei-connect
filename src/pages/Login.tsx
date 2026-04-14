@@ -3,80 +3,72 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link, useNavigate } from "react-router-dom";
-import { Shield } from "lucide-react";
-import type { UserRole } from "@/types";
-
-const roles: { value: UserRole; label: string; icon: string }[] = [
-  { value: "dealer", label: "Dealer", icon: "👤" },
-  { value: "technicien", label: "Technicien", icon: "🔧" },
-  { value: "enqueteur", label: "Enquêteur", icon: "🔍" },
-  { value: "admin", label: "Administrateur", icon: "⚙️" },
-];
+import { Shield, Loader2 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState<UserRole>("dealer");
+  const [loading, setLoading] = useState(false);
+  const { signIn, role } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Mock auth - redirect to appropriate dashboard
-    navigate(`/dashboard/${role}`);
+    setLoading(true);
+    const { error } = await signIn(email, password);
+    setLoading(false);
+    if (error) {
+      if (error.includes("Invalid login")) {
+        toast.error("Email ou mot de passe incorrect");
+      } else {
+        toast.error(error);
+      }
+      return;
+    }
+    toast.success("Connexion réussie !");
+    // Role will be fetched by AuthContext, redirect after short delay
+    setTimeout(() => {
+      navigate(`/dashboard/dealer`);
+    }, 500);
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-8 animate-fade-in">
-        <div className="text-center space-y-2">
-          <Link to="/" className="inline-flex items-center gap-2">
-            <Shield className="h-8 w-8 text-primary" />
-            <span className="font-heading font-bold text-2xl text-foreground">TraceIMEI-BJ</span>
-          </Link>
-          <p className="text-muted-foreground">Connectez-vous à votre espace</p>
-        </div>
+    <div className="min-h-screen bg-background">
+      <div className="benin-stripe" />
+      <div className="flex items-center justify-center p-4 min-h-[calc(100vh-3px)]">
+        <div className="w-full max-w-md space-y-8 animate-fade-in">
+          <div className="text-center space-y-2">
+            <Link to="/" className="inline-flex items-center gap-2">
+              <Shield className="h-8 w-8 text-primary" />
+              <span className="font-heading font-bold text-2xl text-foreground">TraceIMEI-BJ</span>
+            </Link>
+            <p className="text-muted-foreground">Connectez-vous à votre espace</p>
+          </div>
 
-        <form onSubmit={handleSubmit} className="glass-card p-6 space-y-5">
-          <div className="space-y-2">
-            <Label>Rôle</Label>
-            <div className="grid grid-cols-2 gap-2">
-              {roles.map((r) => (
-                <button
-                  key={r.value}
-                  type="button"
-                  onClick={() => setRole(r.value)}
-                  className={`flex items-center gap-2 p-3 rounded-lg border text-sm font-medium transition-all ${
-                    role === r.value
-                      ? "border-primary bg-primary/10 text-primary"
-                      : "border-border text-muted-foreground hover:border-primary/50"
-                  }`}
-                >
-                  <span>{r.icon}</span>
-                  {r.label}
-                </button>
-              ))}
+          <form onSubmit={handleSubmit} className="glass-card p-6 space-y-5">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input id="email" type="email" placeholder="votre@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
             </div>
-          </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" placeholder="votre@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
-          </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Mot de passe</Label>
+              <Input id="password" type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required />
+            </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="password">Mot de passe</Label>
-            <Input id="password" type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required />
-          </div>
+            <Button type="submit" variant="hero" className="w-full" size="lg" disabled={loading}>
+              {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+              Se connecter
+            </Button>
 
-          <Button type="submit" variant="hero" className="w-full" size="lg">
-            Se connecter
-          </Button>
-
-          <p className="text-center text-sm text-muted-foreground">
-            Pas de compte ?{" "}
-            <Link to="/register" className="text-primary font-semibold hover:underline">S'inscrire</Link>
-          </p>
-        </form>
+            <p className="text-center text-sm text-muted-foreground">
+              Pas de compte ?{" "}
+              <Link to="/register" className="text-primary font-semibold hover:underline">S'inscrire</Link>
+            </p>
+          </form>
+        </div>
       </div>
     </div>
   );
