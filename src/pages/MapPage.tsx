@@ -2,21 +2,27 @@ import DashboardLayout from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MapPin, Download } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { MapContainer, TileLayer, CircleMarker, Popup } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
 
 const incidents = [
   { quartier: "Missèbo", lat: 6.3654, lng: 2.4183, type: "vole" as const, count: 5 },
   { quartier: "Dantokpa", lat: 6.3616, lng: 2.4260, type: "vole" as const, count: 3 },
   { quartier: "Cadjehoun", lat: 6.3600, lng: 2.3900, type: "suspect" as const, count: 4 },
-  { quartier: "Akpakpa", lat: 6.3680, lng: 2.4400, type: "vole" as const, count: 2 },
+  { quartier: "Akpakpa", lat: 6.3680, lng: 2.4400, type: "suspect" as const, count: 2 },
   { quartier: "Fidjrossè", lat: 6.3450, lng: 2.3700, type: "legitime" as const, count: 1 },
 ];
 
+const pinColors = { vole: "#E74C3C", suspect: "#F39C12", legitime: "#27AE60" };
+const labelMap = { vole: "🔴 Volé signalé", suspect: "🟠 Suspect", legitime: "🟢 Récupéré" };
 const colorMap = { vole: "text-destructive", suspect: "text-warning", legitime: "text-success" };
-const labelMap = { vole: "🔴 Volé", suspect: "🟠 Suspect", legitime: "🟢 Récupéré" };
 
 export default function MapPage() {
   const [period, setPeriod] = useState("30");
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => { setMounted(true); }, []);
 
   return (
     <DashboardLayout role="enqueteur">
@@ -40,38 +46,55 @@ export default function MapPage() {
           </div>
         </div>
 
-        {/* Map placeholder — Leaflet would go here */}
-        <div className="glass-card overflow-hidden">
-          <div className="h-96 bg-accent/30 flex items-center justify-center relative">
-            <div className="text-center space-y-2">
-              <MapPin className="h-12 w-12 text-primary mx-auto" />
-              <p className="text-foreground font-semibold">Carte interactive — Cotonou, Bénin</p>
-              <p className="text-sm text-muted-foreground">Centré sur 6.3654°N, 2.4183°E</p>
-              <p className="text-xs text-muted-foreground">Intégration Leaflet.js requise pour la carte interactive</p>
+        {/* Légende */}
+        <div className="flex items-center gap-4 text-sm">
+          {Object.entries(labelMap).map(([key, label]) => (
+            <div key={key} className="flex items-center gap-1.5">
+              <span className="inline-block w-3 h-3 rounded-full" style={{ backgroundColor: pinColors[key as keyof typeof pinColors] }} />
+              <span className="text-muted-foreground">{label}</span>
             </div>
-
-            {/* Mock pins overlay */}
-            <div className="absolute inset-0 p-8">
-              {incidents.map((inc, i) => (
-                <div
-                  key={i}
-                  className="absolute"
-                  style={{
-                    left: `${20 + i * 15}%`,
-                    top: `${25 + (i % 3) * 20}%`,
-                  }}
-                >
-                  <div className={`flex items-center gap-1 px-2 py-1 rounded-full bg-card shadow-md text-xs font-medium ${colorMap[inc.type]}`}>
-                    <MapPin className="h-3 w-3" />
-                    {inc.quartier} ({inc.count})
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          ))}
         </div>
 
-        {/* Incident summary by quartier */}
+        {/* Carte Leaflet */}
+        <div className="glass-card overflow-hidden rounded-xl">
+          {mounted && (
+            <MapContainer
+              center={[6.3654, 2.4183]}
+              zoom={13}
+              scrollWheelZoom={true}
+              style={{ height: "450px", width: "100%" }}
+            >
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
+              {incidents.map((inc, i) => (
+                <CircleMarker
+                  key={i}
+                  center={[inc.lat, inc.lng]}
+                  radius={10 + inc.count * 3}
+                  pathOptions={{
+                    color: pinColors[inc.type],
+                    fillColor: pinColors[inc.type],
+                    fillOpacity: 0.6,
+                    weight: 2,
+                  }}
+                >
+                  <Popup>
+                    <div className="text-sm space-y-1">
+                      <p className="font-bold">{inc.quartier}</p>
+                      <p>{labelMap[inc.type]}</p>
+                      <p className="text-xs">{inc.count} incident(s) — {period}j</p>
+                    </div>
+                  </Popup>
+                </CircleMarker>
+              ))}
+            </MapContainer>
+          )}
+        </div>
+
+        {/* Résumé par quartier */}
         <div className="glass-card p-5">
           <h2 className="font-heading font-semibold text-foreground mb-3">Résumé par quartier</h2>
           <div className="space-y-2">
