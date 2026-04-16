@@ -230,7 +230,7 @@ export default function MapPage() {
                       <p>{labelMap[g.type]}</p>
                       <p className="text-xs">{g.count} incident(s) — {period}j</p>
                       {g.references.length > 0 && (
-                        <div className="text-xs pt-1 border-t border-gray-200 mt-1">
+                        <div className="text-xs pt-1 border-t border-border mt-1">
                           <p className="font-semibold">Références :</p>
                           <ul className="font-mono">
                             {g.references.map((ref) => (
