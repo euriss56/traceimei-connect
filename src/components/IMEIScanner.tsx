@@ -50,13 +50,13 @@ export default function IMEIScanner({ compact = false, onResult }: IMEIScannerPr
       if (appErr) console.warn("appareils upsert:", appErr.message);
 
       // 2) Insert enregistrement with 8 ML features
-      const { error: recErr } = await supabase.from("enregistrements_imei").insert({
+      const { error: recErr } = await supabase.from("enregistrements_imei").insert([{
         imei: res.imei,
         utilisateur_id: user.id,
         resultat: res.statut,
         score_anomalie: res.scoreAnomalie,
-        features: res.features as unknown as Record<string, unknown>,
-      });
+        features: res.features as never,
+      }]);
       if (recErr) {
         console.error("enregistrement insert:", recErr);
         toast.error("Échec de l'enregistrement de la vérification");
