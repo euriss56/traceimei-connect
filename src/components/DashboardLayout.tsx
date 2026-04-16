@@ -2,6 +2,8 @@ import { ReactNode } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Shield, Search, AlertTriangle, History, User, LogOut, BarChart3, MapPin, Upload, Settings, Cpu, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 import type { UserRole } from "@/types";
 
 interface DashboardLayoutProps {
@@ -56,6 +58,13 @@ const navItems: Record<UserRole, { to: string; icon: typeof Search; label: strin
 export default function DashboardLayout({ role, children }: DashboardLayoutProps) {
   const location = useLocation();
   const navigate = useNavigate();
+  const { signOut } = useAuth();
+
+  const handleLogout = async () => {
+    await signOut();
+    toast.success("Déconnexion réussie");
+    navigate("/login", { replace: true });
+  };
 
   return (
     <div className="min-h-screen bg-background flex">
@@ -86,7 +95,7 @@ export default function DashboardLayout({ role, children }: DashboardLayoutProps
           ))}
         </nav>
         <div className="p-3">
-          <Button variant="ghost" className="w-full justify-start text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10" onClick={() => navigate("/")}>
+          <Button variant="ghost" className="w-full justify-start text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10" onClick={handleLogout}>
             <LogOut className="h-4 w-4 mr-2" />
             Déconnexion
           </Button>

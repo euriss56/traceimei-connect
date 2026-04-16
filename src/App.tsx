@@ -24,40 +24,49 @@ import PolitiqueRGPD from "./pages/PolitiqueRGPD";
 import Contact from "./pages/Contact";
 import ApiDoc from "./pages/ApiDoc";
 import NotFound from "./pages/NotFound";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <AuthProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
+      <BrowserRouter>
+        <AuthProvider>
+          <Toaster />
+          <Sonner />
           <Routes>
+            {/* Routes publiques */}
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/dashboard/dealer" element={<DashboardDealer />} />
-            <Route path="/dashboard/technicien" element={<DashboardTechnicien />} />
-            <Route path="/dashboard/enqueteur" element={<DashboardEnqueteur />} />
-            <Route path="/dashboard/admin" element={<DashboardAdmin />} />
-            <Route path="/verify" element={<Verify />} />
-            <Route path="/report" element={<Report />} />
-            <Route path="/history" element={<HistoryPage />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/batch" element={<Batch />} />
-            <Route path="/map" element={<MapPage />} />
-            <Route path="/admin/ml" element={<AdminML />} />
-            <Route path="/admin/users" element={<AdminUsers />} />
             <Route path="/mentions-legales" element={<MentionsLegales />} />
             <Route path="/politique-rgpd" element={<PolitiqueRGPD />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/api-doc" element={<ApiDoc />} />
+
+            {/* Dashboards par rôle */}
+            <Route path="/dashboard/dealer" element={<ProtectedRoute allowedRoles={["dealer"]}><DashboardDealer /></ProtectedRoute>} />
+            <Route path="/dashboard/technicien" element={<ProtectedRoute allowedRoles={["technicien"]}><DashboardTechnicien /></ProtectedRoute>} />
+            <Route path="/dashboard/enqueteur" element={<ProtectedRoute allowedRoles={["enqueteur"]}><DashboardEnqueteur /></ProtectedRoute>} />
+            <Route path="/dashboard/admin" element={<ProtectedRoute allowedRoles={["admin"]}><DashboardAdmin /></ProtectedRoute>} />
+
+            {/* Routes authentifiées (tous rôles) */}
+            <Route path="/verify" element={<ProtectedRoute><Verify /></ProtectedRoute>} />
+            <Route path="/report" element={<ProtectedRoute><Report /></ProtectedRoute>} />
+            <Route path="/history" element={<ProtectedRoute><HistoryPage /></ProtectedRoute>} />
+            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+            <Route path="/batch" element={<ProtectedRoute allowedRoles={["dealer", "enqueteur", "admin"]}><Batch /></ProtectedRoute>} />
+            <Route path="/map" element={<ProtectedRoute allowedRoles={["enqueteur", "admin"]}><MapPage /></ProtectedRoute>} />
+
+            {/* Routes admin */}
+            <Route path="/admin/ml" element={<ProtectedRoute allowedRoles={["admin"]}><AdminML /></ProtectedRoute>} />
+            <Route path="/admin/users" element={<ProtectedRoute allowedRoles={["admin"]}><AdminUsers /></ProtectedRoute>} />
+
             <Route path="*" element={<NotFound />} />
           </Routes>
-        </BrowserRouter>
-      </AuthProvider>
+        </AuthProvider>
+      </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
 );

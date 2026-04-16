@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,8 +11,15 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const { signIn, role } = useAuth();
+  const { signIn, role, user } = useAuth();
   const navigate = useNavigate();
+
+  // Redirection automatique dès que l'utilisateur + rôle sont disponibles
+  useEffect(() => {
+    if (user && role) {
+      navigate(`/dashboard/${role}`, { replace: true });
+    }
+  }, [user, role, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,10 +35,7 @@ export default function Login() {
       return;
     }
     toast.success("Connexion réussie !");
-    // Role will be fetched by AuthContext, redirect after short delay
-    setTimeout(() => {
-      navigate(`/dashboard/dealer`);
-    }, 500);
+    // La redirection se fera automatiquement via useEffect dès que role est chargé
   };
 
   return (
