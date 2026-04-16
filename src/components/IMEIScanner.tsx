@@ -37,14 +37,14 @@ export default function IMEIScanner({ compact = false, onResult }: IMEIScannerPr
     try {
       // 1) Upsert appareil
       const { error: appErr } = await supabase.from("appareils").upsert(
-        {
+        [{
           imei: res.imei,
           marque: res.marque,
           modele: res.modele,
           tac: res.imei.slice(0, 8),
           statut: res.statut,
           score_anomalie: res.scoreAnomalie,
-        },
+        }],
         { onConflict: "imei" }
       );
       if (appErr) console.warn("appareils upsert:", appErr.message);
