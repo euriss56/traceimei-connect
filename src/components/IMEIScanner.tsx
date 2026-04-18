@@ -8,6 +8,7 @@ import { Search, Camera, Radio } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import QRScannerModal from "./QRScannerModal";
 
 interface IMEIScannerProps {
   compact?: boolean;
