@@ -21,13 +21,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [role, setRole] = useState<UserRole | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchRole = async (userId: string) => {
-    const { data } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", userId)
-      .single();
-    if (data) setRole(data.role as UserRole);
+  const fetchRole = async (userId: string, retries = 3): Promise<void> => {
+    for (let attempt = 0; attempt < retries; attempt++) {
+      const { data, error } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", userId)
+        .maybeSingle();
+
+      if (error) {
+        console.error("[Auth] fetchRole error:", error.message);
+      }
+      if (data?.role) {
+        setRole(data.role as UserRole);
+        return;
+      }
+      // Retry: le trigger handle_new_user peut avoir un léger délai juste après signup
+      if (attempt < retries - 1) {
+        await new Promise((r) => setTimeout(r, 400 * (attempt + 1)));
+      }
+    }
+    console.warn("[Auth] Aucun rôle trouvé pour l'utilisateur", userId);
+    setRole(null);
   };
 
   useEffect(() => {
@@ -57,11 +72,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error: error?.message ?? null };
   };
 
-  const signUp = async (email: string, password: string, meta: { nom: string; role: UserRole; marche: string; type_activite: string }) => {
+  const signUp = async (
+    email: string,
+    password: string,
+    meta: { nom: string; role: UserRole; marche: string; type_activite: string }
+  ) => {
+    // Defense-in-depth : bloque toute tentative de self-signup admin côté client.
+    // Le trigger handle_new_user le bloque aussi côté DB (whitelist).
+    if (meta.role === "admin") {
+      return { error: "Le rôle administrateur ne peut pas être attribué via l'inscription." };
+    }
+    const redirectUrl = `${window.location.origin}/login`;
     const { error } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: meta },
+      options: {
+        data: meta,
+        emailRedirectTo: redirectUrl,
+      },
     });
     return { error: error?.message ?? null };
   };
