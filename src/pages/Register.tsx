@@ -9,11 +9,12 @@ import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import type { UserRole, Marche, TypeActivite } from "@/types";
 
-const roles: { value: UserRole; label: string; icon: string }[] = [
+// Whitelist UI: admin role NEVER selectable via self-signup (security)
+// Admin must be granted manually by an existing admin
+const roles: { value: Exclude<UserRole, "admin">; label: string; icon: string }[] = [
   { value: "dealer", label: "Dealer", icon: "👤" },
   { value: "technicien", label: "Technicien d'atelier", icon: "🔧" },
   { value: "enqueteur", label: "Enquêteur (ARCEP/Police)", icon: "🔍" },
-  { value: "admin", label: "Administrateur", icon: "⚙️" },
 ];
 
 export default function Register() {
