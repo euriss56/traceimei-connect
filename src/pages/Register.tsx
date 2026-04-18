@@ -9,11 +9,12 @@ import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import type { UserRole, Marche, TypeActivite } from "@/types";
 
-const roles: { value: UserRole; label: string; icon: string }[] = [
+// Whitelist UI: admin role NEVER selectable via self-signup (security)
+// Admin must be granted manually by an existing admin
+const roles: { value: Exclude<UserRole, "admin">; label: string; icon: string }[] = [
   { value: "dealer", label: "Dealer", icon: "👤" },
   { value: "technicien", label: "Technicien d'atelier", icon: "🔧" },
   { value: "enqueteur", label: "Enquêteur (ARCEP/Police)", icon: "🔍" },
-  { value: "admin", label: "Administrateur", icon: "⚙️" },
 ];
 
 export default function Register() {
@@ -56,7 +57,7 @@ export default function Register() {
           <form onSubmit={handleSubmit} className="glass-card p-6 space-y-4">
             <div className="space-y-2">
               <Label>Rôle</Label>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 {roles.map((r) => (
                   <button
                     key={r.value}
