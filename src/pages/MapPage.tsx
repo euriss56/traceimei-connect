@@ -203,6 +203,7 @@ export default function MapPage() {
             <Skeleton className="h-[450px] w-full" />
           ) : (
             <MapContainer
+              key="incidents-map"
               center={[6.3654, 2.4183]}
               zoom={13}
               scrollWheelZoom={true}
