@@ -22,6 +22,8 @@ export default function IMEIScanner({ compact = false, onResult }: IMEIScannerPr
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<IMEIVerificationResult | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const [showQR, setShowQR] = useState(false);
+  const [nfcLoading, setNfcLoading] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const sanitized = sanitizeIMEIInput(e.target.value);
