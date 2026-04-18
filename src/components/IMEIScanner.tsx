@@ -244,6 +244,8 @@ export default function IMEIScanner({ compact = false, onResult }: IMEIScannerPr
           onOpenChange={setShowModal}
         />
       )}
+
+      <QRScannerModal open={showQR} onOpenChange={setShowQR} onScan={handleQRResult} />
     </>
   );
 }
