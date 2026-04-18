@@ -203,13 +203,28 @@ export default function IMEIScanner({ compact = false, onResult }: IMEIScannerPr
           </Button>
           {!compact && (
             <>
-              <Button variant="outline" size="lg" className="min-h-[56px]" title="Scanner code-barres">
+              <Button
+                type="button"
+                variant="outline"
+                size="lg"
+                className="min-h-[56px]"
+                title="Scanner code-barres / QR"
+                onClick={() => setShowQR(true)}
+              >
                 <Camera className="h-5 w-5" />
                 <span className="hidden sm:inline">Scanner</span>
               </Button>
-              <Button variant="outline" size="lg" className="min-h-[56px]" title="Lecture NFC" disabled>
-                <Radio className="h-5 w-5" />
-                <span className="hidden sm:inline">NFC</span>
+              <Button
+                type="button"
+                variant="outline"
+                size="lg"
+                className="min-h-[56px]"
+                title="Lecture NFC"
+                onClick={handleNFCScan}
+                disabled={nfcLoading}
+              >
+                <Radio className={`h-5 w-5 ${nfcLoading ? "animate-pulse" : ""}`} />
+                <span className="hidden sm:inline">{nfcLoading ? "NFC…" : "NFC"}</span>
               </Button>
             </>
           )}
