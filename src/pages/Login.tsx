@@ -14,12 +14,24 @@ export default function Login() {
   const { signIn, role, user } = useAuth();
   const navigate = useNavigate();
 
-  // Redirection automatique dès que l'utilisateur + rôle sont disponibles
+  // Redirection automatique vers le dashboard correspondant au rôle
   useEffect(() => {
     if (user && role) {
+      console.log("[Login] Redirection vers /dashboard/" + role);
       navigate(`/dashboard/${role}`, { replace: true });
     }
   }, [user, role, navigate]);
+
+  // Garde-fou : si l'utilisateur est connecté mais qu'aucun rôle n'a pu être chargé après 5s
+  useEffect(() => {
+    if (!user || role) return;
+    const t = setTimeout(() => {
+      if (!role) {
+        toast.error("Impossible de récupérer votre rôle. Contactez l'administrateur.");
+      }
+    }, 5000);
+    return () => clearTimeout(t);
+  }, [user, role]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
