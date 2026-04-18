@@ -4,11 +4,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Skeleton } from "@/components/ui/skeleton";
 import { MapPin, Download, AlertCircle } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
-import { MapContainer, TileLayer, CircleMarker, Popup } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { getQuartierCoords, statutToType, type IncidentType } from "@/lib/quartiers";
+import IncidentsLeafletMap from "@/components/IncidentsLeafletMap";
 
 const pinColors: Record<IncidentType, string> = {
   vole: "#E74C3C",
@@ -202,49 +201,7 @@ export default function MapPage() {
           {!mounted || loading ? (
             <Skeleton className="h-[450px] w-full" />
           ) : (
-            <MapContainer
-              key="incidents-map"
-              center={[6.3654, 2.4183]}
-              zoom={13}
-              scrollWheelZoom={true}
-              style={{ height: "450px", width: "100%" }}
-            >
-              <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              />
-              {groups.map((g, i) => (
-                <CircleMarker
-                  key={`${g.quartier}-${g.type}-${i}`}
-                  center={[g.lat, g.lng]}
-                  radius={10 + g.count * 3}
-                  pathOptions={{
-                    color: pinColors[g.type],
-                    fillColor: pinColors[g.type],
-                    fillOpacity: 0.6,
-                    weight: 2,
-                  }}
-                >
-                  <Popup>
-                    <div className="text-sm space-y-1">
-                      <p className="font-bold">{g.quartier}</p>
-                      <p>{labelMap[g.type]}</p>
-                      <p className="text-xs">{g.count} incident(s) — {period}j</p>
-                      {g.references.length > 0 && (
-                        <div className="text-xs pt-1 border-t border-border mt-1">
-                          <p className="font-semibold">Références :</p>
-                          <ul className="font-mono">
-                            {g.references.map((ref) => (
-                              <li key={ref}>• {ref}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                    </div>
-                  </Popup>
-                </CircleMarker>
-              ))}
-            </MapContainer>
+            <IncidentsLeafletMap incidents={groups} period={period} />
           )}
         </div>
 
