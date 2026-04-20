@@ -37,6 +37,11 @@ export default function Report() {
 
   const isValidIMEI = imei.length === 15 && validateLuhn(imei);
 
+
+
+  console.log("DEPARTEMENTS:", departements);
+  console.log("COMMUNES:", communes);
+
   // 📍 LOAD DEPARTEMENTS
   useEffect(() => {
     const loadDepartements = async () => {
