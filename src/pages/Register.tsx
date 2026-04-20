@@ -31,7 +31,7 @@ export default function Register() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const { error } = await signUp(email, password, { nom, role, marche, type_activite: typeActivite });
+    const { error } = await signUp(email, password, { name: nom, role, marche, type_activite: typeActivite });
     setLoading(false);
     if (error) {
       toast.error(error);
