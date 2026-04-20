@@ -36,13 +36,7 @@ export default function Report() {
   const [reference, setReference] = useState("");
 
   const isValidIMEI = imei.length === 15 && validateLuhn(imei);
-  
-const { data, error } = await supabase
-  .from("departements")
-  .select("*");
 
-if (error) console.error("DEP ERROR:", error);
-setDepartements(data || []);
 
 
   console.log("DEPARTEMENTS:", departements);
