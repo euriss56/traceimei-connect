@@ -1,3 +1,15 @@
-# Welcome to your Lovable project
+# TraceIMEI-BJ
 
-TODO: Document your project here
+Plateforme hybride ML de traçabilité des téléphones volés au Bénin.
+
+## Stack
+- React + TypeScript + Vite
+- Supabase (Auth + Base de données)
+- Tailwind CSS + shadcn/ui
+
+## Démarrage
+
+```bash
+npm install
+npm run dev
+```
