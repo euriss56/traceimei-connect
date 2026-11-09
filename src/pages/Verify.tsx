@@ -140,7 +140,7 @@ export default function VerifyIMEI() {
 
   return (
     <DashboardLayout>
-      <div className="animate-fade-in max-w-2xl mx-auto space-y-6">
+      <div className="animate-fade-in max-w-3xl mx-auto space-y-7">
         <div>
           <h2 className="text-2xl font-bold text-foreground">Vérifier un IMEI</h2>
           <p className="text-muted-foreground text-sm mt-1">
@@ -149,8 +149,8 @@ export default function VerifyIMEI() {
         </div>
 
         {/* Formulaire */}
-        <Card className="border-border/50">
-          <CardContent className="pt-6">
+        <Card className="border-border/60 shadow-lg shadow-black/[0.03] transition-shadow hover:shadow-xl hover:shadow-black/[0.05]">
+          <CardContent className="pt-6 sm:p-7">
             <form onSubmit={handleVerify} className="space-y-4">
               <div>
                 <div className="relative">
@@ -159,7 +159,7 @@ export default function VerifyIMEI() {
                     value={imei}
                     onChange={e => handleImeiChange(e.target.value)}
                     placeholder="Entrer le numéro IMEI (15 chiffres)"
-                    className="pl-10 font-mono h-12 text-base"
+                    className="pl-10 font-mono h-14 text-base tracking-wider rounded-xl bg-background/80"
                     maxLength={15}
                   />
                 </div>
@@ -174,7 +174,7 @@ export default function VerifyIMEI() {
               </div>
               <Button
                 type="submit"
-                className="w-full h-11 bg-accent text-accent-foreground hover:bg-accent/90"
+                className="w-full h-12 rounded-xl bg-primary text-primary-foreground shadow-md shadow-primary/15 transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/20"
                 disabled={loading || imei.length !== 15}
               >
                 {loading ? (
