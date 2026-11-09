@@ -1,79 +1,33 @@
 import DashboardLayout from "@/components/DashboardLayout";
-import { Button } from "@/components/ui/button";
-import { Users, Plus, Search } from "lucide-react";
+import { Users, Search, Database } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import type { UserRole } from "@/types";
-
-const mockUsers: { id: string; nom: string; email: string; role: UserRole; marche: string; date: string }[] = [
-  { id: "1", nom: "Kofi Mensah", email: "kofi@mail.bj", role: "dealer", marche: "Missèbo", date: "01/03/2026" },
-  { id: "2", nom: "Ama Koudjo", email: "ama@mail.bj", role: "technicien", marche: "Dantokpa", date: "15/02/2026" },
-  { id: "3", nom: "Ibrahim Saka", email: "ibrahim@arcep.bj", role: "enqueteur", marche: "Cadjehoun", date: "01/01/2026" },
-  { id: "4", nom: "Grace Houssou", email: "grace@getech.bj", role: "admin", marche: "Autre", date: "10/12/2025" },
-  { id: "5", nom: "Pierre Dossou", email: "pierre@mail.bj", role: "dealer", marche: "Akpakpa", date: "20/03/2026" },
-];
-
-const roleBadge: Record<UserRole, string> = {
-  dealer: "bg-success/10 text-success",
-  technicien: "bg-warning/10 text-warning",
-  enqueteur: "bg-primary/10 text-primary",
-  admin: "bg-destructive/10 text-destructive",
-};
-
-const roleLabel: Record<UserRole, string> = {
-  dealer: "Dealer",
-  technicien: "Technicien",
-  enqueteur: "Enquêteur",
-  admin: "Admin",
-};
 
 export default function AdminUsers() {
   return (
     <DashboardLayout role="admin">
-      <div className="space-y-6">
-        <div className="flex items-center justify-between flex-wrap gap-3">
-          <h1 className="font-heading font-bold text-2xl text-foreground flex items-center gap-2">
+      <div className="space-y-7 animate-fade-in">
+        <header className="rounded-2xl border border-primary/15 bg-gradient-to-br from-primary/10 via-card to-card p-6 sm:p-7 shadow-sm">
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary mb-2">Administration</p>
+          <h1 className="font-heading font-bold text-2xl sm:text-3xl tracking-tight text-foreground flex items-center gap-2">
             <Users className="h-6 w-6 text-primary" /> Gestion des utilisateurs
           </h1>
-          <Button variant="hero" size="sm">
-            <Plus className="h-4 w-4" /> Ajouter
-          </Button>
-        </div>
+          <p className="text-sm text-muted-foreground mt-2">Consultez et gérez les comptes de la plateforme.</p>
+        </header>
 
-        <div className="relative max-w-sm">
+        <div className="relative max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Rechercher un utilisateur…" className="pl-9" />
+          <Input placeholder="Rechercher un utilisateur…" className="pl-9 h-11 rounded-xl bg-background/80" disabled />
         </div>
 
-        <div className="glass-card overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border bg-muted/50">
-                  <th className="text-left p-3 font-semibold">Nom</th>
-                  <th className="text-left p-3 font-semibold">Email</th>
-                  <th className="text-left p-3 font-semibold">Rôle</th>
-                  <th className="text-left p-3 font-semibold">Marché</th>
-                  <th className="text-left p-3 font-semibold">Inscrit le</th>
-                </tr>
-              </thead>
-              <tbody>
-                {mockUsers.map((u) => (
-                  <tr key={u.id} className="border-b border-border last:border-0 hover:bg-muted/30 transition-colors">
-                    <td className="p-3 font-medium text-foreground">{u.nom}</td>
-                    <td className="p-3 text-muted-foreground">{u.email}</td>
-                    <td className="p-3">
-                      <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${roleBadge[u.role]}`}>
-                        {roleLabel[u.role]}
-                      </span>
-                    </td>
-                    <td className="p-3 text-muted-foreground">{u.marche}</td>
-                    <td className="p-3 text-muted-foreground">{u.date}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        <section className="glass-card rounded-2xl border border-border/60 p-8 sm:p-12 text-center shadow-sm">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+            <Database className="h-7 w-7" />
           </div>
-        </div>
+          <h2 className="font-heading text-lg font-semibold text-foreground">Liste des comptes non connectée</h2>
+          <p className="mx-auto mt-2 max-w-lg text-sm leading-6 text-muted-foreground">
+            Cette page ne charge pas encore les utilisateurs depuis la base de données. Aucun compte fictif n’est affiché afin de ne pas fausser les informations d’administration.
+          </p>
+        </section>
       </div>
     </DashboardLayout>
   );
