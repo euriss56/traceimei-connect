@@ -1,140 +1,123 @@
-import { useState } from 'react';
-import { Shield, AlertTriangle, XCircle, Search, Info } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
-import DashboardLayout from '@/components/DashboardLayout';
-import { useAuth } from '@/hooks/useAuth.tsx'
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
-import { traceIMEIApi } from '@/services/traceimei-api';
-import { MLScoreBadge } from '@/components/MLScoreBadge';
+import { useState } from "react";
+import { Shield, AlertTriangle, XCircle, Search, Info, HelpCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent } from "@/components/ui/card";
+import DashboardLayout from "@/components/DashboardLayout";
+import { useAuth } from "@/hooks/useAuth.tsx";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+
+type VerificationStatus = "safe" | "suspect" | "stolen" | "unknown";
 
 interface VerifyResult {
-  status: 'safe' | 'suspect' | 'stolen';
-  score: number;
+  status: VerificationStatus;
+  score: number | null;
   phone?: { brand: string; model: string; created_at: string; city: string };
   reportCount: number;
-  mlScore?: any;
 }
 
 export default function VerifyIMEI() {
   const { user } = useAuth();
   const { toast } = useToast();
-  const [imei, setImei] = useState('');
+  const [imei, setImei] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<VerifyResult | null>(null);
-  const [imeiError, setImeiError] = useState('');
-
-  const validateImei = (value: string) => {
-    if (value.length === 0) { setImeiError(''); return; }
-    if (value.length < 15) { setImeiError(`${15 - value.length} chiffres restants`); return; }
-    setImeiError('');
-  };
+  const [imeiError, setImeiError] = useState("");
 
   const handleImeiChange = (value: string) => {
-    const clean = value.replace(/\D/g, '').slice(0, 15);
+    const clean = value.replace(/\D/g, "").slice(0, 15);
     setImei(clean);
-    validateImei(clean);
+    setImeiError(clean.length > 0 && clean.length < 15 ? `${15 - clean.length} chiffres restants` : "");
   };
 
   const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!/^\d{15}$/.test(imei)) {
-      toast({ title: 'Erreur', description: 'L\'IMEI doit contenir 15 chiffres.', variant: 'destructive' });
+      toast({ title: "IMEI invalide", description: "L'IMEI doit contenir exactement 15 chiffres.", variant: "destructive" });
       return;
     }
+
     setLoading(true);
     setResult(null);
-
-    // ── Vérification Supabase (logique existante) ──────────────
-    const { data: phones } = await supabase.from('stolen_phones').select('*').eq('imei', imei);
-    const { data: checks } = await supabase.from('imei_checks').select('id').eq('imei', imei);
-
-    const reportCount = phones?.length || 0;
-    const checkCount = checks?.length || 0;
-
-    let score = 0;
-    if (reportCount > 0) {
-      score += Math.min(reportCount * 30, 60);
-      const latest = phones?.[0];
-      if (latest) {
-        const daysSince = Math.max(0, (Date.now() - new Date(latest.created_at).getTime()) / 86400000);
-        score += daysSince < 30 ? 20 : daysSince < 90 ? 10 : 5;
-      }
-      score += Math.min(checkCount * 3, 15);
-    } else {
-      score = Math.min(checkCount * 2, 25);
-    }
-    score = Math.min(score, 100);
-
-    let status: 'safe' | 'suspect' | 'stolen';
-    if (score >= 70) status = 'stolen';
-    else if (score >= 31) status = 'suspect';
-    else status = 'safe';
-
-    const verifyResult: VerifyResult = {
-      status, score, reportCount,
-      phone: phones && phones.length > 0 ? {
-        brand: phones[0].brand,
-        model: phones[0].model,
-        created_at: phones[0].created_at,
-        city: phones[0].city
-      } : undefined,
-    };
-
-    // ── Appel Flask ML (nouveau) ───────────────────────────────
     try {
-      const mlData = await traceIMEIApi.verifyIMEI(imei);
-      verifyResult.mlScore = mlData.ml_score;
-    } catch {
-      // Flask indisponible (sleep Render) → on continue sans ML
-    }
+      const [{ data: device, error: deviceError }, { data: reports, error: reportsError }] = await Promise.all([
+        supabase.from("appareils")
+          .select("imei, marque, modele, statut, score_anomalie, created_at")
+          .eq("imei", imei)
+          .maybeSingle(),
+        supabase.from("signalements_vol")
+          .select("id, marque, modele, created_at, quartier, reference")
+          .eq("imei", imei)
+          .order("created_at", { ascending: false }),
+      ]);
 
-    // ── Enregistrement dans Supabase ───────────────────────────
-    if (user) {
-      await supabase.from('imei_checks').insert({
-        user_id: user.id, imei, result: status, risk_score: score
+      if (deviceError) throw deviceError;
+      if (reportsError) throw reportsError;
+
+      const reportCount = reports?.length ?? 0;
+      const status: VerificationStatus = device?.statut === "vole" || reportCount > 0
+        ? "stolen"
+        : device?.statut === "suspect"
+          ? "suspect"
+          : device?.statut === "legitime"
+            ? "safe"
+            : "unknown";
+
+      const latestReport = reports?.[0];
+      const verifyResult: VerifyResult = {
+        status,
+        score: device ? Number(device.score_anomalie) : null,
+        reportCount,
+        phone: device ? {
+          brand: device.marque || latestReport?.marque || "Non renseignée",
+          model: device.modele || latestReport?.modele || "Non renseigné",
+          created_at: device.created_at,
+          city: latestReport?.quartier || "Non renseigné",
+        } : undefined,
+      };
+
+      // L'historique n'accepte que les statuts connus du référentiel.
+      if (user && device) {
+        const { error: historyError } = await supabase.from("enregistrements_imei").insert({
+          utilisateur_id: user.id,
+          imei,
+          resultat: device.statut,
+          score_anomalie: Number(device.score_anomalie) || 0,
+          features: {},
+        });
+        if (historyError) console.warn("Historique non enregistré :", historyError.message);
+      }
+
+      setResult(verifyResult);
+    } catch (error) {
+      console.error("Erreur de vérification IMEI :", error);
+      toast({
+        title: "Vérification impossible",
+        description: "La base de données n'a pas pu confirmer le statut de cet IMEI. Réessayez plus tard.",
+        variant: "destructive",
       });
+    } finally {
+      setLoading(false);
     }
-
-    if (reportCount > 0) {
-      supabase.functions.invoke('notify-owner', {
-        body: { imei, verifier_info: `Vérification depuis l'application` },
-      }).catch(() => {});
-    }
-
-    setResult(verifyResult);
-    setLoading(false);
   };
 
   const statusConfig = {
     safe: {
-      icon: Shield,
-      color: 'text-success',
-      bg: 'bg-success/10',
-      border: 'border-success/30',
-      label: 'TÉLÉPHONE SÉCURISÉ',
-      barColor: 'bg-success',
-      gradient: 'from-success/20 to-success/5'
+      icon: Shield, color: "text-success", bg: "bg-success/10", border: "border-success/30",
+      label: "IMEI RÉPERTORIÉ COMME LÉGITIME", gradient: "from-success/20 to-success/5",
     },
     suspect: {
-      icon: AlertTriangle,
-      color: 'text-warning',
-      bg: 'bg-warning/10',
-      border: 'border-warning/30',
-      label: 'TÉLÉPHONE SUSPECT',
-      barColor: 'bg-warning',
-      gradient: 'from-warning/20 to-warning/5'
+      icon: AlertTriangle, color: "text-warning", bg: "bg-warning/10", border: "border-warning/30",
+      label: "IMEI SIGNALÉ COMME SUSPECT", gradient: "from-warning/20 to-warning/5",
     },
     stolen: {
-      icon: XCircle,
-      color: 'text-destructive',
-      bg: 'bg-destructive/10',
-      border: 'border-destructive/30',
-      label: 'TÉLÉPHONE VOLÉ',
-      barColor: 'bg-destructive',
-      gradient: 'from-destructive/20 to-destructive/5'
+      icon: XCircle, color: "text-destructive", bg: "bg-destructive/10", border: "border-destructive/30",
+      label: "IMEI ASSOCIÉ À UN SIGNALEMENT DE VOL", gradient: "from-destructive/20 to-destructive/5",
+    },
+    unknown: {
+      icon: HelpCircle, color: "text-muted-foreground", bg: "bg-muted", border: "border-border",
+      label: "IMEI NON RÉPERTORIÉ", gradient: "from-muted to-card",
     },
   };
 
@@ -144,11 +127,10 @@ export default function VerifyIMEI() {
         <div>
           <h2 className="text-2xl font-bold text-foreground">Vérifier un IMEI</h2>
           <p className="text-muted-foreground text-sm mt-1">
-            Vérifiez si un téléphone a été déclaré volé avant de l'acheter.
+            Consultez les informations réellement présentes dans la base TraceIMEI-BJ.
           </p>
         </div>
 
-        {/* Formulaire */}
         <Card className="border-border/60 shadow-lg shadow-black/[0.03] transition-shadow hover:shadow-xl hover:shadow-black/[0.05]">
           <CardContent className="pt-6 sm:p-7">
             <form onSubmit={handleVerify} className="space-y-4">
@@ -161,111 +143,66 @@ export default function VerifyIMEI() {
                     placeholder="Entrer le numéro IMEI (15 chiffres)"
                     className="pl-10 font-mono h-14 text-base tracking-wider rounded-xl bg-background/80"
                     maxLength={15}
+                    inputMode="numeric"
+                    aria-label="Numéro IMEI"
                   />
                 </div>
-                {imeiError && (
-                  <p className="text-xs text-muted-foreground mt-1.5 flex items-center gap-1">
-                    <Info size={12} />{imeiError}
-                  </p>
-                )}
+                {imeiError && <p className="text-xs text-muted-foreground mt-1.5 flex items-center gap-1"><Info size={12} />{imeiError}</p>}
                 <p className="text-xs text-muted-foreground mt-1.5">
-                  💡 Tapez <code className="bg-muted px-1 py-0.5 rounded text-foreground font-mono">*#06#</code> sur le téléphone pour obtenir l'IMEI
+                  💡 Tapez <code className="bg-muted px-1 py-0.5 rounded text-foreground font-mono">*#06#</code> sur le téléphone pour obtenir l'IMEI.
                 </p>
               </div>
-              <Button
-                type="submit"
-                className="w-full h-12 rounded-xl bg-primary text-primary-foreground shadow-md shadow-primary/15 transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/20"
-                disabled={loading || imei.length !== 15}
-              >
-                {loading ? (
-                  <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 border-2 border-accent-foreground/30 border-t-accent-foreground rounded-full animate-spin" />
-                    Vérification en cours...
-                  </div>
-                ) : 'Vérifier l\'IMEI'}
+              <Button type="submit" className="w-full h-12 rounded-xl" disabled={loading || imei.length !== 15}>
+                {loading ? "Vérification en cours…" : "Vérifier l'IMEI"}
               </Button>
             </form>
           </CardContent>
         </Card>
 
-        {/* Résultat */}
-        {result && (
-          <Card className={`border-2 ${statusConfig[result.status].border} animate-fade-in overflow-hidden`}>
-            <div className={`absolute inset-0 bg-gradient-to-br ${statusConfig[result.status].gradient} pointer-events-none`} />
-            <CardContent className="pt-6 space-y-5 relative">
-
-              {/* Statut principal */}
-              <div className={`flex items-center gap-3 ${statusConfig[result.status].color}`}>
-                {(() => {
-                  const Icon = statusConfig[result.status].icon;
-                  return (
-                    <div className={`w-12 h-12 rounded-xl ${statusConfig[result.status].bg} flex items-center justify-center`}>
-                      <Icon size={24} />
-                    </div>
-                  );
-                })()}
-                <div>
-                  <h3 className="text-lg font-bold">{statusConfig[result.status].label}</h3>
-                  <p className="text-xs text-muted-foreground">Score de risque base de données: {result.score}%</p>
-                </div>
-              </div>
-
-              {/* Barre de risque Supabase */}
-              <div className="space-y-2">
-                <div className="w-full h-2.5 bg-muted rounded-full overflow-hidden">
-                  <div
-                    className={`h-full rounded-full transition-all duration-700 ease-out ${statusConfig[result.status].barColor}`}
-                    style={{ width: `${result.score}%` }}
-                  />
-                </div>
-              </div>
-
-              {/* Infos signalement */}
-              <div className="space-y-2 text-sm">
-                <p className="text-muted-foreground">
-                  Signalé <strong className="text-foreground">{result.reportCount} fois</strong> dans la base
-                </p>
-                {result.reportCount > 0 && (
-                  <div className="flex items-center gap-2 text-xs text-accent bg-accent/10 px-3 py-2 rounded-lg">
-                    <Info size={14} />
-                    Le propriétaire a été automatiquement notifié de cette vérification.
-                  </div>
-                )}
-                {result.phone && (
-                  <div className="bg-muted/50 rounded-xl p-4 space-y-2 mt-3">
-                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                      Détails du téléphone
+        {result && (() => {
+          const config = statusConfig[result.status];
+          const Icon = config.icon;
+          return (
+            <Card className={`border-2 ${config.border} animate-fade-in overflow-hidden`}>
+              <CardContent className={`pt-6 space-y-5 bg-gradient-to-br ${config.gradient}`}>
+                <div className={`flex items-center gap-3 ${config.color}`}>
+                  <div className={`w-12 h-12 rounded-xl ${config.bg} flex items-center justify-center`}><Icon size={24} /></div>
+                  <div>
+                    <h3 className="text-lg font-bold">{config.label}</h3>
+                    <p className="text-xs text-muted-foreground">
+                      {result.score !== null ? `Score d'anomalie enregistré : ${(result.score * 100).toFixed(0)}%` : "Aucun score disponible dans la base."}
                     </p>
-                    <div className="grid grid-cols-2 gap-2 text-sm">
-                      <div><span className="text-muted-foreground">Marque:</span> <strong className="text-foreground">{result.phone.brand}</strong></div>
-                      <div><span className="text-muted-foreground">Modèle:</span> <strong className="text-foreground">{result.phone.model}</strong></div>
-                      <div><span className="text-muted-foreground">Ville:</span> <strong className="text-foreground">{result.phone.city}</strong></div>
-                      <div><span className="text-muted-foreground">Déclaré le:</span> <strong className="text-foreground">{new Date(result.phone.created_at).toLocaleDateString('fr-FR')}</strong></div>
-                    </div>
                   </div>
-                )}
-              </div>
-
-              {/* ── Score ML Flask (nouveau) ── */}
-              {result.mlScore ? (
-                <div className="border-t border-border/50 pt-4">
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-                    🤖 Analyse ML — Random Forest + Isolation Forest
-                  </p>
-                  <MLScoreBadge score={result.mlScore} showDetails={true} />
                 </div>
-              ) : (
-                <div className="border-t border-border/50 pt-4">
-                  <p className="text-xs text-muted-foreground flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-muted-foreground/40 animate-pulse inline-block" />
-                    Analyse ML Flask non disponible (service en veille — réessayez dans 30s)
-                  </p>
-                </div>
-              )}
 
-            </CardContent>
-          </Card>
-        )}
+                <div className="space-y-2 text-sm">
+                  <p className="text-muted-foreground">
+                    Signalements associés : <strong className="text-foreground">{result.reportCount}</strong>
+                  </p>
+                  {result.status === "unknown" && (
+                    <p className="rounded-lg bg-muted/70 p-3 text-sm text-muted-foreground">
+                      Cet IMEI n’a pas été trouvé dans les enregistrements consultés. Cela ne signifie pas que le téléphone est légitime ou qu’il n’a jamais été volé.
+                    </p>
+                  )}
+                  {result.phone && (
+                    <div className="bg-muted/50 rounded-xl p-4 space-y-2 mt-3">
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Détails disponibles</p>
+                      <div className="grid grid-cols-2 gap-2 text-sm">
+                        <div><span className="text-muted-foreground">Marque :</span> <strong className="text-foreground">{result.phone.brand}</strong></div>
+                        <div><span className="text-muted-foreground">Modèle :</span> <strong className="text-foreground">{result.phone.model}</strong></div>
+                        <div><span className="text-muted-foreground">Zone :</span> <strong className="text-foreground">{result.phone.city}</strong></div>
+                        <div><span className="text-muted-foreground">Enregistré le :</span> <strong className="text-foreground">{new Date(result.phone.created_at).toLocaleDateString("fr-FR")}</strong></div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <p className="border-t border-border/50 pt-3 text-xs text-muted-foreground">
+                  Résultat basé sur les données disponibles dans TraceIMEI-BJ. Une absence de signalement ne constitue pas une garantie de propriété.
+                </p>
+              </CardContent>
+            </Card>
+          );
+        })()}
       </div>
     </DashboardLayout>
   );
