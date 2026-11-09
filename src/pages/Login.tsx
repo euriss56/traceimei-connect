@@ -54,27 +54,27 @@ export default function Login() {
     <div className="min-h-screen bg-background">
       <div className="benin-stripe" />
       <div className="flex items-center justify-center p-4 min-h-[calc(100vh-3px)]">
-        <div className="w-full max-w-md space-y-8 animate-fade-in">
-          <div className="text-center space-y-2">
+        <div className="w-full max-w-md space-y-7 animate-fade-in">
+          <div className="text-center space-y-3">
             <Link to="/" className="inline-flex items-center gap-2">
-              <Shield className="h-8 w-8 text-primary" />
-              <span className="font-heading font-bold text-2xl text-foreground">TraceIMEI-BJ</span>
+              <span className="h-12 w-12 rounded-2xl bg-primary/10 ring-1 ring-primary/20 flex items-center justify-center"><Shield className="h-7 w-7 text-primary" /></span>
+              <span className="font-heading font-bold text-2xl tracking-tight text-foreground">TraceIMEI-BJ</span>
             </Link>
             <p className="text-muted-foreground">Connectez-vous à votre espace</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="glass-card p-6 space-y-5">
+          <form onSubmit={handleSubmit} className="glass-card rounded-2xl border border-border/60 p-6 sm:p-7 space-y-5 shadow-xl shadow-black/[0.04]">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" placeholder="votre@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
+              <Input id="email" type="email" autoComplete="email" className="h-11 rounded-xl bg-background/80" placeholder="votre@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="password">Mot de passe</Label>
-              <Input id="password" type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required />
+              <Input id="password" type="password" autoComplete="current-password" className="h-11 rounded-xl bg-background/80" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required />
             </div>
 
-            <Button type="submit" variant="hero" className="w-full" size="lg" disabled={loading}>
+            <Button type="submit" variant="hero" className="w-full h-12 rounded-xl shadow-md transition-all hover:-translate-y-0.5" size="lg" disabled={loading}>
               {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
               Se connecter
             </Button>
