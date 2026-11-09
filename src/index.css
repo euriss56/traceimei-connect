@@ -95,6 +95,26 @@
   }
 }
 
+html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+body { min-width: 320px; overflow-x: hidden; }
+::selection { background: hsl(var(--primary) / .18); color: hsl(var(--foreground)); }
+:focus-visible { outline: 3px solid hsl(var(--ring) / .55); outline-offset: 3px; }
+img, svg { max-width: 100%; }
+@media (prefers-reduced-motion: no-preference) {
+  .glass-card, [data-slot="card"], .card-hover { transition: transform .28s ease, box-shadow .28s ease, border-color .28s ease; }
+  .glass-card:hover, [data-slot="card"]:hover, .card-hover:hover { transform: translateY(-4px); box-shadow: 0 18px 42px -24px hsl(var(--primary) / .32); border-color: hsl(var(--primary) / .28); }
+  button, a, input, textarea, select { transition-duration: .2s; }
+  .page-enter { animation: pageEnter .55s cubic-bezier(.2,.7,.2,1) both; }
+  .soft-float { animation: softFloat 6s ease-in-out infinite; }
+}
+@keyframes pageEnter { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes softFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+@media (max-width: 640px) {
+  .container { padding-left: 1rem; padding-right: 1rem; }
+}
 @layer base {
   * {
     @apply border-border;
