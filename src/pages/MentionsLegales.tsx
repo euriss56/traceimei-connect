@@ -17,10 +17,10 @@ export default function MentionsLegales() {
         </div>
       </nav>
 
-      <main className="container mx-auto px-4 py-12 max-w-3xl space-y-8">
-        <h1 className="font-heading text-3xl font-bold text-foreground">Mentions Légales</h1>
+      <main className="container mx-auto px-4 py-10 sm:py-14 max-w-4xl space-y-7 animate-fade-in">
+        <header className="rounded-2xl border border-primary/15 bg-gradient-to-br from-primary/10 via-card to-card p-6 sm:p-8 shadow-sm"><p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary mb-2">Informations officielles</p><h1 className="font-heading text-3xl sm:text-4xl font-bold tracking-tight text-foreground">Mentions légales</h1><p className="text-sm text-muted-foreground mt-2">Informations relatives à l’éditeur et à l’utilisation de TraceIMEI-BJ.</p></header>
 
-        <section className="space-y-3">
+        <section className="rounded-2xl border border-border/60 bg-card/60 p-5 sm:p-6 space-y-3 shadow-sm">
           <h2 className="font-heading text-xl font-semibold text-foreground">Éditeur du site</h2>
           <p className="text-muted-foreground">
             <strong className="text-foreground">TraceIMEI-BJ</strong> est une plateforme éditée par <strong className="text-foreground">GETECH — Groupe d'Études en Technologies et Informatique</strong>, basé à Cotonou, Bénin.
