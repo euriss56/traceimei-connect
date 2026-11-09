@@ -164,7 +164,7 @@ export default function MapPage() {
         <div className="rounded-2xl border border-primary/15 bg-gradient-to-br from-primary/10 via-card to-card p-5 sm:p-7 shadow-sm flex items-center justify-between flex-wrap gap-4">
           <div><p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary mb-2">Vue territoriale</p><h1 className="font-heading font-bold text-2xl sm:text-3xl tracking-tight text-foreground flex items-center gap-2">
             <MapPin className="h-6 w-6 text-primary" /> Carte des Incidents
-          </h1>
+          </h1><p className="text-sm text-muted-foreground mt-2">Visualisez les signalements agrégés par quartier et leur évolution.</p></div>
           <div className="flex items-center gap-2">
             <Select value={period} onValueChange={setPeriod}>
               <SelectTrigger className="w-36 rounded-xl bg-background/80"><SelectValue /></SelectTrigger>
