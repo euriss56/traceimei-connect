@@ -45,16 +45,16 @@ export default function Register() {
     <div className="min-h-screen bg-background">
       <div className="benin-stripe" />
       <div className="flex items-center justify-center p-4 min-h-[calc(100vh-3px)]">
-        <div className="w-full max-w-md space-y-8 animate-fade-in">
-          <div className="text-center space-y-2">
+        <div className="w-full max-w-xl space-y-7 animate-fade-in">
+          <div className="text-center space-y-3">
             <Link to="/" className="inline-flex items-center gap-2">
-              <Shield className="h-8 w-8 text-primary" />
-              <span className="font-heading font-bold text-2xl text-foreground">TraceIMEI-BJ</span>
+              <span className="h-12 w-12 rounded-2xl bg-primary/10 ring-1 ring-primary/20 flex items-center justify-center"><Shield className="h-7 w-7 text-primary" /></span>
+              <span className="font-heading font-bold text-2xl tracking-tight text-foreground">TraceIMEI-BJ</span>
             </Link>
             <p className="text-muted-foreground">Créez votre compte TraceIMEI-BJ</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="glass-card p-6 space-y-4">
+          <form onSubmit={handleSubmit} className="glass-card rounded-2xl border border-border/60 p-6 sm:p-7 space-y-5 shadow-xl shadow-black/[0.04]">
             <div className="space-y-2">
               <Label>Rôle</Label>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -63,7 +63,7 @@ export default function Register() {
                     key={r.value}
                     type="button"
                     onClick={() => setRole(r.value)}
-                    className={`flex items-center gap-2 p-3 rounded-lg border text-sm font-medium transition-all ${
+                    className={`flex items-center gap-2 p-3 sm:p-4 rounded-xl border text-sm font-medium transition-all hover:-translate-y-0.5 ${
                       role === r.value
                         ? "border-primary bg-primary/10 text-primary"
                         : "border-border text-muted-foreground hover:border-primary/50"
@@ -93,7 +93,7 @@ export default function Register() {
               <div className="space-y-2">
                 <Label>Marché / Zone</Label>
                 <Select value={marche} onValueChange={(v) => setMarche(v as Marche)}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectTrigger className="h-11 rounded-xl bg-background/80"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="Missebo">Missèbo</SelectItem>
                     <SelectItem value="Dantokpa">Dantokpa</SelectItem>
@@ -115,7 +115,7 @@ export default function Register() {
               </div>
             </div>
 
-            <Button type="submit" variant="hero" className="w-full" size="lg" disabled={loading}>
+            <Button type="submit" variant="hero" className="w-full h-12 rounded-xl shadow-md transition-all hover:-translate-y-0.5" size="lg" disabled={loading}>
               {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
               Créer mon compte
             </Button>
