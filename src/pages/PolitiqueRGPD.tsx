@@ -17,10 +17,10 @@ export default function PolitiqueRGPD() {
         </div>
       </nav>
 
-      <main className="container mx-auto px-4 py-12 max-w-3xl space-y-8">
-        <h1 className="font-heading text-3xl font-bold text-foreground">Politique de Protection des Données</h1>
+      <main className="container mx-auto px-4 py-10 sm:py-14 max-w-4xl space-y-7 animate-fade-in">
+        <header className="rounded-2xl border border-primary/15 bg-gradient-to-br from-primary/10 via-card to-card p-6 sm:p-8 shadow-sm"><p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary mb-2">Confidentialité et transparence</p><h1 className="font-heading text-3xl sm:text-4xl font-bold tracking-tight text-foreground">Protection des données</h1><p className="text-sm text-muted-foreground mt-2">Découvrez quelles informations sont utilisées et comment elles sont protégées sur TraceIMEI-BJ.</p></header>
 
-        <section className="space-y-3">
+        <section className="rounded-2xl border border-border/60 bg-card/60 p-5 sm:p-6 space-y-3 shadow-sm">
           <h2 className="font-heading text-xl font-semibold text-foreground">Cadre juridique</h2>
           <p className="text-muted-foreground">
             La présente politique est établie conformément à la <strong className="text-foreground">loi n° 2017-20 du 20 avril 2018</strong> portant code du numérique en République du Bénin et aux recommandations de l'<strong className="text-foreground">APDP</strong> (Autorité de Protection des Données Personnelles du Bénin).
