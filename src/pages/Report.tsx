@@ -195,7 +195,7 @@ export default function Report() {
           </div>
 
           {/* MARQUE / MODELE */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Input placeholder="Marque" value={marque} onChange={(e) => setMarque(e.target.value)} />
             <Input placeholder="Modèle" value={modele} onChange={(e) => setModele(e.target.value)} />
           </div>
@@ -246,7 +246,7 @@ export default function Report() {
           <Button
             type="submit"
             disabled={!isValidIMEI || submitting || !departementId || !communeId}
-            className="w-full"
+            className="w-full rounded-xl py-6 font-semibold shadow-lg shadow-primary/15 transition-transform hover:-translate-y-0.5"
           >
             {submitting ? <Loader2 className="animate-spin" /> : "Soumettre"}
           </Button>
