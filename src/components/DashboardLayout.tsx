@@ -69,24 +69,24 @@ export default function DashboardLayout({ role, children }: DashboardLayoutProps
   return (
     <div className="min-h-screen bg-background flex">
       {/* Sidebar - desktop */}
-      <aside className="hidden lg:flex flex-col w-64 bg-primary text-primary-foreground">
-        <div className="p-4 flex items-center gap-2 border-b border-primary-foreground/20">
-          <Shield className="h-6 w-6" />
-          <span className="font-heading font-bold">TraceIMEI-BJ</span>
+      <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-white/10 bg-[#081426] text-white shadow-xl lg:flex">
+        <div className="flex items-center gap-3 border-b border-white/10 px-5 py-6">
+          <span className="grid h-10 w-10 place-items-center rounded-xl bg-sky-500 text-white shadow-lg shadow-sky-500/20"><Shield className="h-5 w-5" /></span>
+          <span className="font-heading text-base font-extrabold tracking-tight">TraceIMEI<span className="text-sky-300">-BJ</span></span>
         </div>
-        <div className="px-4 py-3 border-b border-primary-foreground/10">
-          <p className="text-xs opacity-60">Connecté en tant que</p>
-          <p className="text-sm font-semibold">{roleLabels[role]}</p>
+        <div className="border-b border-white/10 px-5 py-5">
+          <p className="text-[10px] font-bold uppercase tracking-[.2em] text-slate-400">Connecté en tant que</p>
+          <p className="mt-1 text-sm font-bold text-white">{roleLabels[role]}</p>
         </div>
-        <nav className="flex-1 p-3 space-y-1">
+        <nav className="flex-1 space-y-1 overflow-y-auto p-3 pt-5">
           {navItems[role].map((item) => (
             <Link
               key={item.to}
               to={item.to}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                 location.pathname === item.to
-                  ? "bg-primary-foreground/20 text-primary-foreground"
-                  : "text-primary-foreground/70 hover:bg-primary-foreground/10 hover:text-primary-foreground"
+                  ? "bg-sky-400/15 text-sky-100 shadow-inner"
+                  : "text-slate-300 hover:bg-white/[.07] hover:text-white"
               }`}
             >
               <item.icon className="h-4 w-4" />
@@ -94,8 +94,8 @@ export default function DashboardLayout({ role, children }: DashboardLayoutProps
             </Link>
           ))}
         </nav>
-        <div className="p-3">
-          <Button variant="ghost" className="w-full justify-start text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10" onClick={handleLogout}>
+        <div className="border-t border-white/10 p-3">
+          <Button variant="ghost" className="w-full justify-start text-slate-300 hover:bg-white/10 hover:text-white" onClick={handleLogout}>
             <LogOut className="h-4 w-4 mr-2" />
             Déconnexion
           </Button>
@@ -105,21 +105,21 @@ export default function DashboardLayout({ role, children }: DashboardLayoutProps
       {/* Main content */}
       <div className="flex-1 flex flex-col">
         {/* Mobile header */}
-        <header className="lg:hidden flex items-center justify-between p-4 border-b border-border bg-card">
+        <header className="sticky top-0 z-40 flex items-center justify-between border-b border-border bg-card/95 p-4 backdrop-blur-xl lg:hidden">
           <div className="flex items-center gap-2">
-            <Shield className="h-6 w-6 text-primary" />
+            <span className="grid h-9 w-9 place-items-center rounded-xl bg-primary text-primary-foreground"><Shield className="h-5 w-5" /></span>
             <span className="font-heading font-bold text-foreground">TraceIMEI-BJ</span>
           </div>
           <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full font-medium">{roleLabels[role]}</span>
         </header>
 
         {/* Content */}
-        <main className="flex-1 p-4 md:p-6 overflow-auto">
+        <main className="min-w-0 flex-1 overflow-auto bg-muted/20 p-4 md:p-6 lg:p-8">
           {children}
         </main>
 
         {/* Mobile bottom nav */}
-        <nav className="lg:hidden flex items-center justify-around border-t border-border bg-card py-2">
+        <nav className="sticky bottom-0 z-40 flex items-center justify-around border-t border-border bg-card/95 py-2 pb-[max(.5rem,env(safe-area-inset-bottom))] backdrop-blur-xl lg:hidden">
           {navItems[role].slice(0, 5).map((item) => (
             <Link
               key={item.to}
