@@ -160,14 +160,14 @@ export default function MapPage() {
 
   return (
     <DashboardLayout role="enqueteur">
-      <div className="space-y-6">
-        <div className="flex items-center justify-between flex-wrap gap-3">
-          <h1 className="font-heading font-bold text-2xl text-foreground flex items-center gap-2">
+      <div className="space-y-7 animate-fade-in">
+        <div className="rounded-2xl border border-primary/15 bg-gradient-to-br from-primary/10 via-card to-card p-5 sm:p-7 shadow-sm flex items-center justify-between flex-wrap gap-4">
+          <div><p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary mb-2">Vue territoriale</p><h1 className="font-heading font-bold text-2xl sm:text-3xl tracking-tight text-foreground flex items-center gap-2">
             <MapPin className="h-6 w-6 text-primary" /> Carte des Incidents
           </h1>
           <div className="flex items-center gap-2">
             <Select value={period} onValueChange={setPeriod}>
-              <SelectTrigger className="w-36"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="w-36 rounded-xl bg-background/80"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="7">7 jours</SelectItem>
                 <SelectItem value="30">30 jours</SelectItem>
@@ -197,7 +197,7 @@ export default function MapPage() {
         </div>
 
         {/* Carte Leaflet */}
-        <div className="glass-card overflow-hidden rounded-xl">
+        <div className="glass-card overflow-hidden rounded-2xl border border-border/60 shadow-sm">
           {!mounted || loading ? (
             <Skeleton className="h-[450px] w-full" />
           ) : (
@@ -206,7 +206,7 @@ export default function MapPage() {
         </div>
 
         {/* Résumé par quartier */}
-        <div className="glass-card p-5">
+        <div className="glass-card rounded-2xl border border-border/60 p-5 sm:p-6 shadow-sm">
           <h2 className="font-heading font-semibold text-foreground mb-3">Résumé par quartier</h2>
           {loading ? (
             <div className="space-y-2">
