@@ -34,10 +34,10 @@ export default function Contact() {
         </div>
       </nav>
 
-      <main className="container mx-auto px-4 py-12 max-w-4xl">
-        <h1 className="font-heading text-3xl font-bold text-foreground mb-8">Contactez-nous</h1>
+      <main className="container mx-auto px-4 py-10 sm:py-14 max-w-5xl space-y-8 animate-fade-in">
+        <header className="rounded-2xl border border-primary/15 bg-gradient-to-br from-primary/10 via-card to-card p-6 sm:p-8 shadow-sm"><p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary mb-2">Assistance TraceIMEI-BJ</p><h1 className="font-heading text-3xl sm:text-4xl font-bold tracking-tight text-foreground">Contactez-nous</h1><p className="text-muted-foreground mt-2 max-w-2xl">Une question ou une difficulté ? Retrouvez nos coordonnées et transmettez votre demande.</p></header>
 
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
           <div className="space-y-6">
             <p className="text-muted-foreground">
               Vous avez une question, un problème technique ou une suggestion ? L'équipe TraceIMEI-BJ est à votre disposition.
@@ -67,7 +67,7 @@ export default function Contact() {
               </div>
             </div>
 
-            <div className="glass-card p-4">
+            <div className="glass-card rounded-2xl border border-border/60 p-5 shadow-sm">
               <p className="text-sm text-muted-foreground">
                 <strong className="text-foreground">Horaires :</strong> Lundi – Vendredi, 8h00 – 18h00 (GMT+1)<br />
                 <strong className="text-foreground">Délai de réponse :</strong> 24 à 48 heures ouvrées
@@ -75,7 +75,7 @@ export default function Contact() {
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="glass-card p-6 space-y-4">
+          <form onSubmit={handleSubmit} className="glass-card rounded-2xl border border-border/60 p-6 sm:p-7 space-y-4 shadow-sm">
             <div className="space-y-2">
               <Label htmlFor="nom">Nom complet</Label>
               <Input id="nom" value={nom} onChange={(e) => setNom(e.target.value)} placeholder="Votre nom" required />
