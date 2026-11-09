@@ -75,12 +75,12 @@ export default function HistoryPage() {
 
   return (
     <DashboardLayout role="dealer">
-      <div className="space-y-6">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <h1 className="font-heading font-bold text-2xl text-foreground">📋 Historique des vérifications</h1>
-          <div className="flex gap-2">
+      <div className="space-y-7 animate-fade-in">
+        <div className="rounded-2xl border border-primary/15 bg-gradient-to-br from-primary/10 via-card to-card p-5 sm:p-7 shadow-sm flex flex-wrap items-center justify-between gap-4">
+          <div><p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary mb-2">Suivi personnel</p><h1 className="font-heading font-bold text-2xl sm:text-3xl tracking-tight text-foreground">Historique des vérifications</h1><p className="text-sm text-muted-foreground mt-2">Retrouvez les contrôles IMEI effectués et leurs résultats.</p></div>
+          <div className="flex flex-wrap gap-2">
             <Select value={periodFilter} onValueChange={(v) => setPeriodFilter(v as typeof periodFilter)}>
-              <SelectTrigger className="w-32"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="w-32 rounded-xl bg-background/80"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="7">7 jours</SelectItem>
                 <SelectItem value="30">30 jours</SelectItem>
@@ -89,7 +89,7 @@ export default function HistoryPage() {
               </SelectContent>
             </Select>
             <Select value={statutFilter} onValueChange={(v) => setStatutFilter(v as typeof statutFilter)}>
-              <SelectTrigger className="w-36"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="w-36 rounded-xl bg-background/80"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Tous statuts</SelectItem>
                 <SelectItem value="legitime">Légitime</SelectItem>
@@ -100,13 +100,13 @@ export default function HistoryPage() {
           </div>
         </div>
 
-        <div className="glass-card overflow-hidden">
+        <div className="glass-card overflow-hidden rounded-2xl border border-border/60 shadow-sm">
           {loading ? (
             <div className="p-12 flex items-center justify-center text-muted-foreground">
               <Loader2 className="h-6 w-6 animate-spin mr-2" /> Chargement…
             </div>
           ) : rows.length === 0 ? (
-            <div className="p-12 text-center text-muted-foreground">
+            <div className="p-12 sm:p-16 text-center text-muted-foreground">
               <Inbox className="h-10 w-10 mx-auto mb-2 opacity-50" />
               <p>Aucune vérification sur cette période.</p>
             </div>
@@ -124,7 +124,7 @@ export default function HistoryPage() {
                 </thead>
                 <tbody>
                   {rows.map((h) => (
-                    <tr key={h.id} className="border-b border-border last:border-0 hover:bg-muted/30 transition-colors">
+                    <tr key={h.id} className="border-b border-border/70 last:border-0 hover:bg-primary/[0.035] transition-colors">
                       <td className="p-3 font-mono text-foreground">{formatIMEI(h.imei)}</td>
                       <td className="p-3 text-muted-foreground">{h.marque ? `${h.marque} ${h.modele ?? ""}` : "—"}</td>
                       <td className="p-3"><StatusBadge statut={h.resultat} size="sm" /></td>
