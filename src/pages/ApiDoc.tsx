@@ -1,53 +1,5 @@
 import { Link } from "react-router-dom";
-import { Shield, ArrowLeft, Code, Lock, Zap, Database } from "lucide-react";
-
-const endpoints = [
-  {
-    method: "POST",
-    path: "/api/imei/verify",
-    description: "Vérifie un numéro IMEI et retourne le statut, le score d'anomalie ML et les 8 features détaillées.",
-    params: "imei (string, 15 chiffres)",
-    response: '{ statut: "legitime"|"suspect"|"vole", scoreAnomalie: 0.73, features: {...} }',
-    auth: true,
-    rateLimit: "100 requêtes/heure/IP",
-  },
-  {
-    method: "POST",
-    path: "/api/signalement",
-    description: "Signaler un téléphone volé. Crée un enregistrement et met à jour le statut de l'IMEI.",
-    params: "imei, marque, modele, dateVol, quartier, description?, photo?",
-    response: '{ reference: "BJ-2026-00123", statut: "ouvert" }',
-    auth: true,
-    rateLimit: "20 requêtes/heure",
-  },
-  {
-    method: "GET",
-    path: "/api/imei/history",
-    description: "Récupère l'historique des vérifications de l'utilisateur connecté.",
-    params: "page (int), limit (int, max 50)",
-    response: '{ data: [...], total: 234, page: 1 }',
-    auth: true,
-    rateLimit: "60 requêtes/heure",
-  },
-  {
-    method: "POST",
-    path: "/api/batch/verify",
-    description: "Vérification en lot via upload CSV. Maximum 50 IMEI par requête.",
-    params: "file (CSV, colonne imei)",
-    response: '{ results: [{ imei, statut, scoreAnomalie }], processed: 50, duration: "12.4s" }',
-    auth: true,
-    rateLimit: "10 requêtes/heure",
-  },
-  {
-    method: "GET",
-    path: "/api/stats/dashboard",
-    description: "Statistiques du tableau de bord pour l'utilisateur connecté.",
-    params: "period (7d|30d|3m)",
-    response: '{ verificationsCount: 23, suspectsCount: 2, tauxProprete: 0.91 }',
-    auth: true,
-    rateLimit: "60 requêtes/heure",
-  },
-];
+import { Shield, ArrowLeft, Code, Lock, Database, Info } from "lucide-react";
 
 export default function ApiDoc() {
   return (
@@ -65,99 +17,63 @@ export default function ApiDoc() {
         </div>
       </nav>
 
-      <main className="container mx-auto px-4 py-10 sm:py-14 max-w-5xl space-y-9 animate-fade-in">
-        <div>
-          <h1 className="font-heading text-3xl font-bold text-foreground">Documentation API</h1>
-          <p className="text-muted-foreground mt-2">API REST TraceIMEI-BJ — Python 3.11 + Flask 3.0</p>
-        </div>
+      <main className="container mx-auto px-4 py-10 sm:py-14 max-w-5xl space-y-8 animate-fade-in">
+        <header className="rounded-2xl border border-primary/15 bg-gradient-to-br from-primary/10 via-card to-card p-6 sm:p-8 shadow-sm">
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary mb-2">Espace développeurs</p>
+          <h1 className="font-heading text-3xl sm:text-4xl font-bold tracking-tight text-foreground">Documentation API</h1>
+          <p className="text-muted-foreground mt-2 max-w-2xl">Informations sur l’intégration technique de TraceIMEI-BJ. Cette page sera complétée avec les contrats d’API vérifiés.</p>
+        </header>
 
         <div className="grid md:grid-cols-3 gap-4">
           <div className="glass-card rounded-2xl border border-border/60 p-4 flex items-start gap-3 shadow-sm">
             <Lock className="h-5 w-5 text-primary mt-0.5" />
             <div>
               <p className="font-medium text-foreground text-sm">Authentification</p>
-              <p className="text-xs text-muted-foreground">JWT Bearer Token dans le header Authorization</p>
+              <p className="text-xs text-muted-foreground">L’application utilise Supabase Auth pour les sessions utilisateur.</p>
             </div>
           </div>
-          <div className="glass-card p-4 flex items-start gap-3">
-            <Zap className="h-5 w-5 text-primary mt-0.5" />
-            <div>
-              <p className="font-medium text-foreground text-sm">Performance</p>
-              <p className="text-xs text-muted-foreground">Temps de réponse &lt; 2s — optimisé 3G</p>
-            </div>
-          </div>
-          <div className="glass-card p-4 flex items-start gap-3">
+          <div className="glass-card rounded-2xl border border-border/60 p-4 flex items-start gap-3 shadow-sm">
             <Database className="h-5 w-5 text-primary mt-0.5" />
             <div>
-              <p className="font-medium text-foreground text-sm">Base URL</p>
-              <p className="text-xs text-muted-foreground font-mono">https://api.traceimei-bj.com/v1</p>
+              <p className="font-medium text-foreground text-sm">Données</p>
+              <p className="text-xs text-muted-foreground">La couche de données du frontend est connectée à Supabase.</p>
+            </div>
+          </div>
+          <div className="glass-card rounded-2xl border border-border/60 p-4 flex items-start gap-3 shadow-sm">
+            <Code className="h-5 w-5 text-primary mt-0.5" />
+            <div>
+              <p className="font-medium text-foreground text-sm">Technologies</p>
+              <p className="text-xs text-muted-foreground">React, TypeScript, Vite et Supabase JS.</p>
             </div>
           </div>
         </div>
 
-        <section className="space-y-4">
-          <h2 className="font-heading text-xl font-semibold text-foreground">Endpoints</h2>
-          {endpoints.map((ep) => (
-            <div key={ep.path} className="glass-card rounded-2xl border border-border/60 p-5 sm:p-6 space-y-4 shadow-sm transition-all hover:border-primary/25 hover:shadow-md">
-              <div className="flex items-center gap-3">
-                <span className={`px-2 py-0.5 rounded text-xs font-bold font-mono ${
-                  ep.method === "GET" ? "bg-success/20 text-success" : "bg-primary/20 text-primary"
-                }`}>
-                  {ep.method}
-                </span>
-                <code className="font-mono text-sm text-foreground">{ep.path}</code>
-                {ep.auth && <span className="ml-auto text-xs bg-warning/20 text-warning px-2 py-0.5 rounded">🔒 Auth requise</span>}
-              </div>
-              <p className="text-sm text-muted-foreground">{ep.description}</p>
-              <div className="grid md:grid-cols-2 gap-3 text-xs">
-                <div>
-                  <p className="font-medium text-foreground mb-1">Paramètres</p>
-                  <code className="block bg-muted p-2 rounded text-muted-foreground font-mono">{ep.params}</code>
-                </div>
-                <div>
-                  <p className="font-medium text-foreground mb-1">Réponse</p>
-                  <code className="block bg-muted p-2 rounded text-muted-foreground font-mono break-all">{ep.response}</code>
-                </div>
-              </div>
-              <p className="text-xs text-muted-foreground">Rate limit : {ep.rateLimit}</p>
-            </div>
-          ))}
-        </section>
-
-        <section className="space-y-3">
-          <h2 className="font-heading text-xl font-semibold text-foreground">Codes d'erreur</h2>
-          <div className="glass-card overflow-hidden">
-            <table className="w-full text-sm">
-              <thead className="bg-muted/50">
-                <tr>
-                  <th className="text-left p-3 font-medium text-foreground">Code</th>
-                  <th className="text-left p-3 font-medium text-foreground">Description</th>
-                </tr>
-              </thead>
-              <tbody className="text-muted-foreground">
-                <tr className="border-t border-border"><td className="p-3 font-mono">400</td><td className="p-3">Requête invalide — IMEI malformé ou caractères non autorisés</td></tr>
-                <tr className="border-t border-border"><td className="p-3 font-mono">401</td><td className="p-3">Session expirée, veuillez vous reconnecter</td></tr>
-                <tr className="border-t border-border"><td className="p-3 font-mono">429</td><td className="p-3">Trop de requêtes — rate limit dépassé</td></tr>
-                <tr className="border-t border-border"><td className="p-3 font-mono">500</td><td className="p-3">Erreur interne du serveur</td></tr>
-              </tbody>
-            </table>
+        <section className="rounded-2xl border border-warning/30 bg-warning/5 p-5 sm:p-6 space-y-3">
+          <div className="flex items-center gap-2 text-foreground">
+            <Info className="h-5 w-5 text-warning" />
+            <h2 className="font-heading text-xl font-semibold">Documentation des routes en cours de validation</h2>
           </div>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            Le dépôt frontend actuellement publié ne contient pas le code source du serveur Flask ni un contrat OpenAPI permettant de confirmer les routes, paramètres, formats de réponse, règles d’authentification ou limites de requêtes.
+          </p>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            Pour éviter de fournir des exemples inexacts, les anciennes routes et URL non vérifiées ne sont plus présentées comme des interfaces disponibles. Elles seront publiées ici après vérification du backend et des réponses réellement retournées.
+          </p>
         </section>
 
-        <section className="glass-card p-5 space-y-3">
-          <h2 className="font-heading text-xl font-semibold text-foreground flex items-center gap-2">
-            <Code className="h-5 w-5" /> Exemple cURL
-          </h2>
-          <pre className="bg-muted p-4 rounded-lg text-xs font-mono text-muted-foreground overflow-x-auto">
-{`curl -X POST https://api.traceimei-bj.com/v1/api/imei/verify \\
-  -H "Authorization: Bearer <votre_token_jwt>" \\
-  -H "Content-Type: application/json" \\
-  -d '{"imei": "353456789012345"}'`}
-          </pre>
+        <section className="glass-card rounded-2xl border border-border/60 p-5 sm:p-6 space-y-3 shadow-sm">
+          <h2 className="font-heading text-xl font-semibold text-foreground">Avant d’intégrer l’API</h2>
+          <ul className="list-disc list-inside space-y-2 text-sm text-muted-foreground">
+            <li>Confirmer l’URL publique et la version du serveur API.</li>
+            <li>Vérifier les routes directement dans le code backend ou dans son schéma OpenAPI.</li>
+            <li>Documenter les champs obligatoires, les réponses et les codes d’erreur réels.</li>
+            <li>Préciser le mécanisme d’authentification et les permissions par rôle.</li>
+            <li>Publier des exemples de requêtes uniquement après un test sur l’environnement actif.</li>
+          </ul>
         </section>
 
         <p className="text-xs text-muted-foreground pt-4 border-t border-border">
-          © 2026 TraceIMEI-BJ — GETECH, Cotonou, Bénin. Stack : Python 3.11 + Flask 3.0, PostgreSQL 16, Redis 7.2, Scikit-learn 1.4
+          © 2026 TraceIMEI-BJ — GETECH, Cotonou, Bénin.
         </p>
       </main>
     </div>
