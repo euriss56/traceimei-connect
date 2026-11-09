@@ -74,7 +74,7 @@ export default function DashboardDealer() {
 
   return (
     <DashboardLayout role="dealer">
-      <div className="max-w-2xl mx-auto space-y-6">
+      <div className="mx-auto max-w-6xl space-y-7 page-enter">
         {/* Zone 1: Quick Scan */}
         <div className="glass-card p-5">
           <h1 className="font-heading font-bold text-xl text-foreground mb-4">🔍 Scan IMEI rapide</h1>
@@ -110,8 +110,8 @@ export default function DashboardDealer() {
         {/* Zone 3: Weekly Stats */}
         <div>
           <p className="text-xs text-muted-foreground mb-2">Stats sur 7 jours</p>
-          <div className="grid grid-cols-3 gap-3">
-            <div className="glass-card p-4 text-center">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <div className="glass-card rounded-2xl p-5 text-center transition-transform duration-300 hover:-translate-y-1">
               <p className="text-2xl font-heading font-bold text-foreground">{weekStats.total}</p>
               <p className="text-xs text-muted-foreground">Vérifications</p>
             </div>
