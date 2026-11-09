@@ -77,13 +77,13 @@ export default function Profile() {
 
   return (
     <DashboardLayout role={role ?? "dealer"}>
-      <div className="max-w-xl mx-auto space-y-6">
-        <h1 className="font-heading font-bold text-2xl text-foreground">👤 Mon profil</h1>
+      <div className="max-w-2xl mx-auto space-y-7 animate-fade-in">
+        <div className="rounded-2xl border border-primary/15 bg-gradient-to-br from-primary/10 via-card to-card p-6 sm:p-7 shadow-sm"><p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary mb-2">Espace personnel</p><h1 className="font-heading font-bold text-2xl sm:text-3xl tracking-tight text-foreground">Mon profil</h1><p className="text-sm text-muted-foreground mt-2">Gérez vos informations et suivez votre activité sur TraceIMEI-BJ.</p></div>
 
-        <div className="glass-card p-6 space-y-4">
+        <div className="glass-card rounded-2xl border border-border/60 p-5 sm:p-6 space-y-5 shadow-sm">
           <div className="flex items-center gap-4">
-            <div className="h-16 w-16 rounded-full bg-primary flex items-center justify-center">
-              <User className="h-8 w-8 text-primary-foreground" />
+            <div className="h-16 w-16 rounded-2xl bg-primary/10 ring-1 ring-primary/20 flex items-center justify-center">
+              <User className="h-8 w-8 text-primary" />
             </div>
             <div className="flex-1 min-w-0">
               <h2 className="font-heading font-bold text-lg text-foreground truncate">{nom || "Sans nom"}</h2>
@@ -111,7 +111,7 @@ export default function Profile() {
           <div className="space-y-2">
             <Label>Marché principal</Label>
             <Select value={marche} onValueChange={(v) => setMarche(v as Marche)}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectTrigger className="rounded-xl bg-background/80"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="Missebo">Missèbo</SelectItem>
                 <SelectItem value="Dantokpa">Dantokpa</SelectItem>
@@ -120,7 +120,7 @@ export default function Profile() {
               </SelectContent>
             </Select>
           </div>
-          <Button onClick={handleSave} disabled={saving} className="w-full">
+          <Button onClick={handleSave} disabled={saving} className="w-full h-11 rounded-xl shadow-sm transition-all hover:-translate-y-0.5">
             {saving ? <><Loader2 className="h-4 w-4 animate-spin" /> Enregistrement…</> : <><Save className="h-4 w-4" /> Enregistrer</>}
           </Button>
         </div>
