@@ -15,8 +15,7 @@ export default function Contact() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success("Message envoyé avec succès ! Nous vous répondrons sous 48h.");
-    setNom(""); setEmail(""); setSujet(""); setMessage("");
+    toast.error("Aucun message n’a été envoyé : ce formulaire n’est pas encore relié à un service de réception. Vos informations sont conservées dans les champs.");
   };
 
   return (
