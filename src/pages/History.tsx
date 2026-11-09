@@ -19,7 +19,7 @@ interface Row {
 }
 
 export default function HistoryPage() {
-  const { user } = useAuth();
+  const { user, role } = useAuth();
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
   const [statutFilter, setStatutFilter] = useState<"all" | IMEIStatut>("all");
@@ -74,7 +74,7 @@ export default function HistoryPage() {
   }, [user, statutFilter, periodFilter]);
 
   return (
-    <DashboardLayout role="dealer">
+    <DashboardLayout role={role ?? "dealer"}>
       <div className="space-y-7 animate-fade-in">
         <div className="rounded-2xl border border-primary/15 bg-gradient-to-br from-primary/10 via-card to-card p-5 sm:p-7 shadow-sm flex flex-wrap items-center justify-between gap-4">
           <div><p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary mb-2">Suivi personnel</p><h1 className="font-heading font-bold text-2xl sm:text-3xl tracking-tight text-foreground">Historique des vérifications</h1><p className="text-sm text-muted-foreground mt-2">Retrouvez les contrôles IMEI effectués et leurs résultats.</p></div>
